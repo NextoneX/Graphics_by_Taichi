@@ -295,9 +295,9 @@ def render(gui):
             'Hint:',
             pos=(0, 0.99),color=0x0)
     gui.text(content=
-            'Left Mouse Button: create particle;  Right Mouse Button: generate attraction',
+            'Left Mouse Button: create new particle;  Right Mouse Button: generate attraction',
             pos=(0, 0.95),color=0x0)
-    gui.text(content='R: restart;  Space: pause_board;  WSAD/arrow keys: control gravity',
+    gui.text(content='R: restart;  Space: stop board;  WSAD/arrow keys: control gravity',
             pos=(0, 0.91),color=0x0)
     # gui.text(content=f'Y: Spring Young\'s modulus {spring_Y[None]:.1f}',
     #         pos=(0, 0.9),color=0x0)
@@ -333,7 +333,7 @@ def init_particles(initial: ti.i32):
 
 def main():
     gui = ti.GUI('PBF2D', screen_res)
-    Initial_particles = gui.slider('Initial Particles', 
+    Initial_particles = gui.slider('Initial Particle Number', 
                                    0, 4000, step=50)
     Initial_particles.value = 1600
     new_particles = gui.slider('New Particles', 
@@ -348,7 +348,7 @@ def main():
     borad_range = gui.slider('Board Range', 
                                    0, 32, step=1)
     borad_range.value = 16
-    pause = gui.button('Pause_board')
+    pause = gui.button('Stop Board')
     p_num = gui.label('Particle_num')
     max_num = gui.label('Particle_max')
     max_num.value = 4096

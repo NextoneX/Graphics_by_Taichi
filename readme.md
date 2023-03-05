@@ -14,3 +14,33 @@ Taichi is available as a PyPI package:
 ```bash
 pip install taichi
 ```
+
+## Items
+
+### pbf2d_game.py:
+
+​	A simple simulation of `Macklin, M. and Müller, M., 2013. Position based fluids. ACM Transactions on Graphics (TOG), 32(4), p.104.`
+
+​	I added more interactivity to it, now you can create new particle, generate attraction, control gravity and change parameter.
+
+​	If you'd like to experience more features, please leave me a message.  
+
+#### Key description:
+
+- Left Mouse Button : create new particle;
+- Right Mouse Button: generate attraction;
+- R: restart;  
+- Space: Stop board;  
+- WSAD/arrow keys: control gravity;
+
+#### Adjustable parameters:
+
+- `Initial particle number` : The modification takes effect upon restart
+- `New Particles` : The number of new particles produced at a time. The modification takes effect immediately
+- `Attraction Strength` : The magnitude of attraction ( caused by Right Mouse Button ). The modification takes effect immediately
+- `Board Period` & `Board Range` : Control the movement of board. The modification takes effect after the board has completed a full cycle of movement
+
+
+
+
+
