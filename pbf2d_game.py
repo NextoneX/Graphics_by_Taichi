@@ -52,10 +52,10 @@ spiky_grad_factor = -45.0 / math.pi
 gravity = ti.Vector.field(2, dtype=float, shape=())
 attractor_strength = ti.field(dtype=float, shape=())
 attractor_pos = ti.Vector.field(2, dtype=float, shape=())
-period = ti.field(dtype=ti.i32, shape=())
-range__ = ti.field(dtype=float, shape=())
-period_ = ti.field(dtype=ti.i32, shape=())
-range_ = ti.field(dtype=float, shape=())
+new_period = ti.field(dtype=ti.i32, shape=())
+new_range = ti.field(dtype=float, shape=())
+current_period = ti.field(dtype=ti.i32, shape=())
+current_range = ti.field(dtype=float, shape=())
 
 old_positions = ti.Vector.field(2, float)
 positions = ti.Vector.field(2, float)
@@ -81,8 +81,8 @@ nb_node.dense(ti.j, max_num_neighbors).place(particle_neighbors)
 ti.root.dense(ti.i, max_num_particles).place(lambdas, position_deltas)
 ti.root.place(board_states)
 gravity[None] = [0, -1]
-period_[None] = 90
-range_[None] = 16.0
+current_period[None] = 90
+current_range[None] = 16.0
 
 @ti.func
 def poly6_value(s, h):
@@ -151,11 +151,11 @@ def move_board():
     # probably more accurate to exert force on particles according to hooke's law.
     b = board_states[None]
     b[1] += 1.0
-    if b[1] >= 2 * period_[None]:
+    if b[1] >= 2 * current_period[None]:
         b[1] = 0
-        period_[None] = period[None]
-        range_[None] = range__[None]
-    b[0] += -ti.sin(b[1] * np.pi / period_[None]) * range_[None] * time_delta * 50 / period_[None]
+        current_period[None] = new_period[None]
+        current_range[None] = new_range[None]
+    b[0] += -ti.sin(b[1] * np.pi / current_period[None]) * current_range[None] * time_delta * 50 / current_period[None]
     board_states[None] = b
 
 
@@ -357,8 +357,8 @@ def main():
     paused = False
     while gui.running:
         p_num.value = num_particles[None]
-        range__[None] = borad_range.value
-        period[None] = int(board_period.value)
+        new_range[None] = borad_range.value
+        new_period[None] = int(board_period.value)
         mouse = gui.get_cursor_pos()
         attractor_pos[None] = [mouse[0], mouse[1]]
         for e in gui.get_events(ti.GUI.PRESS):
