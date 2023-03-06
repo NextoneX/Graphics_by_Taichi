@@ -19,7 +19,7 @@ pip install taichi
 
 ### pbf2d_game.py:
 
-### ![](.\resource\demo.gif)
+![image](https://github.com/NextoneX/Graphics_by_Taichi/blob/main/resource/demo.gif)
 
 ​	A simple simulation of `Macklin, M. and Müller, M., 2013. Position based fluids. ACM Transactions on Graphics (TOG), 32(4), p.104.`
 
