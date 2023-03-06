@@ -19,6 +19,8 @@ pip install taichi
 
 ### pbf2d_game.py:
 
+### ![](.\resource\demo.gif)
+
 ​	A simple simulation of `Macklin, M. and Müller, M., 2013. Position based fluids. ACM Transactions on Graphics (TOG), 32(4), p.104.`
 
 ​	I added more interactivity to it, now you can create new particle, generate attraction, control gravity and change parameters.
