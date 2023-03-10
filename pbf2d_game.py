@@ -15,6 +15,8 @@ boundary = (screen_res[0] / screen_to_world_ratio,
 cell_size = 2.51
 cell_recpr = 1.0 / cell_size
 mouse = (0.0, 0.0)
+time_delta = 1.0 / 20.0
+epsilon = 1e-5
 
 def round_up(f, s):
     return (math.floor(f * cell_recpr / s) + 1) * s
@@ -25,12 +27,10 @@ grid_size = (round_up(boundary[0], 1), round_up(boundary[1], 1))
 bg_color = 0xf6f6ee
 particle_color = 0x99d8f5
 boundary_color = 0xebaca2
-
+# Particle
 max_num_particles = 8192
 max_num_particles_per_cell = 100
 max_num_neighbors = 100
-time_delta = 1.0 / 20.0
-epsilon = 1e-5
 particle_radius = 3.0
 particle_radius_in_world = particle_radius / screen_to_world_ratio
 
@@ -49,6 +49,7 @@ neighbor_radius = h_ * 1.05
 poly6_factor = 315.0 / 64.0 / math.pi
 spiky_grad_factor = -45.0 / math.pi
 
+# Force
 gravity = ti.Vector.field(2, dtype=float, shape=())
 attractor_strength = ti.field(dtype=float, shape=())
 attractor_pos = ti.Vector.field(2, dtype=float, shape=())
@@ -57,6 +58,7 @@ new_range = ti.field(dtype=float, shape=())
 current_period = ti.field(dtype=ti.i32, shape=())
 current_range = ti.field(dtype=float, shape=())
 
+# Particle property
 old_positions = ti.Vector.field(2, float)
 positions = ti.Vector.field(2, float)
 velocities = ti.Vector.field(2, float)
@@ -69,9 +71,9 @@ position_deltas = ti.Vector.field(2, float)
 # 0: x-pos, 1: timestep in sin()
 board_states = ti.Vector.field(2, float)
 
+# memory management
 num_particles = ti.field(dtype=ti.i32, shape=())
 ti.root.dense(ti.i, max_num_particles).place(old_positions, positions, velocities)
-
 grid_snode = ti.root.dense(ti.ij, grid_size)
 grid_snode.place(grid_num_particles)
 grid_snode.dense(ti.k, max_num_particles_per_cell).place(grid2particles)
@@ -177,7 +179,7 @@ def prologue(attraction: ti.f32):
         vel *= 0.99
         # update position
         pos += vel * time_delta
-        # restrict position
+        # restrict position(boundary)
         positions[i] = confine_position_to_boundary(pos)
 
     # clear neighbor lookup table
@@ -187,13 +189,14 @@ def prologue(attraction: ti.f32):
         particle_neighbors[I] = -1
 
     # update grid
+    # to find potential neighbors(in the near grids)
     for p_i in range(n):
         cell = get_cell(positions[p_i])
         # ti.Vector doesn't seem to support unpacking yet
         # but we can directly use int Vectors as indices
         offs = ti.atomic_add(grid_num_particles[cell], 1)
         grid2particles[cell, offs] = p_i
-    # find particle neighbors
+    # find particle neighbors(in the near grids)
     for p_i in range(n):
         pos_i = positions[p_i]
         cell = get_cell(pos_i)
