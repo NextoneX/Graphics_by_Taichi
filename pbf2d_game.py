@@ -67,7 +67,6 @@ grid2particles = ti.field(int)
 particle_num_neighbors = ti.field(int)
 particle_neighbors = ti.field(int)
 lambdas = ti.field(float)
-position_deltas = ti.Vector.field(2, float)
 # 0: x-pos, 1: timestep in sin()
 board_states = ti.Vector.field(2, float)
 
@@ -80,7 +79,7 @@ grid_snode.dense(ti.k, max_num_particles_per_cell).place(grid2particles)
 nb_node = ti.root.dense(ti.i, max_num_particles)
 nb_node.place(particle_num_neighbors)
 nb_node.dense(ti.j, max_num_neighbors).place(particle_neighbors)
-ti.root.dense(ti.i, max_num_particles).place(lambdas, position_deltas)
+ti.root.dense(ti.i, max_num_particles).place(lambdas)
 ti.root.place(board_states)
 gravity[None] = [0, -1]
 current_period[None] = 90
@@ -260,10 +259,8 @@ def substep():
                 spiky_gradient(pos_ji, h_)
 
         pos_delta_i /= rho0
-        position_deltas[p_i] = pos_delta_i
-    # apply position deltas
-    for i in range(n):
-        positions[i] += position_deltas[i]
+        # apply position deltas
+        positions[p_i] += pos_delta_i
 
 
 @ti.kernel
