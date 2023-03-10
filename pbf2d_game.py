@@ -170,9 +170,14 @@ def prologue(attraction: ti.f32):
         g = gravity[None]
         pos, vel = positions[i], velocities[i]
         dist = attractor_pos[None] * boundary - pos
+        # update velocities
         vel += g * time_delta * 9.8
         vel += dist / (0.01 + dist.norm()) * attractor_strength[None] * time_delta * attraction
+        # damp velocities
+        vel *= 0.99
+        # update position
         pos += vel * time_delta
+        # restrict position
         positions[i] = confine_position_to_boundary(pos)
 
     # clear neighbor lookup table
